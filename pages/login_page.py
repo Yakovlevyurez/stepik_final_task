@@ -5,8 +5,8 @@ from selenium import webdriver
 
 
 class LoginPage(BasePage):
-    def should_be_login_page(self):
-        self.should_be_login_url()
+    def should_be_login_page(self, driverr):
+        self.should_be_login_url(driverr)
         self.should_be_login_form()
         self.should_be_register_form()
 
