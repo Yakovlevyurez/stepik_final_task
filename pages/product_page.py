@@ -2,35 +2,60 @@ from .base_page import BasePage
 from .locators import ProductPageLocators
 
 
+from .base_page import BasePage
+from .locators import ProductPageLocators
+
+
 class ProductPage(BasePage):
+    product_name = ''
+    product_price = ''
+    product_decription = ''
 
-    def press_button_add_to_basket(self):
-        # Нажимаем кнопку Add to basket
-        button_add_to_basket = self.browser.find_element(*ProductPageLocators.BUTTON_ADD_TO_BASKET)
-        button_add_to_basket.click()
+    def add_product_to_basket(self):
+        self.should_be_name()
+        self.should_be_price()
+        self.should_be_decription()
+        self.should_be_add_button()
 
-    def should_be_message_about_adding(self):
-        # Сначала проверяем, что элементы присутствуют на странице
-        assert self.is_element_present(*ProductPageLocators.PRODUCT_NAME), (
-            "Product name is not presented")
-        assert self.is_element_present(*ProductPageLocators.MESSAGE_ABOUT_ADDING), (
-            "Message about adding is not presented")
-        # Затем получаем текст элементов для проверки
-        product_name = self.browser.find_element(*ProductPageLocators.PRODUCT_NAME).text
-        message = self.browser.find_element(*ProductPageLocators.MESSAGE_ABOUT_ADDING).text
-        # Проверяем, что название товара присутствует в сообщении о добавлении
-        # Это можно было бы сделать с помощью split() и сравнения строк,
-        # Но не вижу необходимости усложнять код
-        assert product_name in message, "No product name in the message"
+        btn = self.browser.find_element(*ProductPageLocators.BTN_ADD_TO_BASKET)
+        btn.click()
+        self.solve_quiz_and_get_code()
 
-    def should_be_message_basket_total(self):
-        # Сначала проверяем, что элементы присутствуют на странице
-        assert self.is_element_present(*ProductPageLocators.MESSAGE_BASKET_TOTAL), (
-            "Message basket total is not presented")
-        assert self.is_element_present(*ProductPageLocators.PRODUCT_PRICE), (
-            "Product price is not presented")
-        # Затем получаем текст элементов для проверки
-        message_basket_total = self.browser.find_element(*ProductPageLocators.MESSAGE_BASKET_TOTAL).text
-        product_price = self.browser.find_element(*ProductPageLocators.PRODUCT_PRICE).text
-        # Проверяем, что цена товара присутствует в сообщении со стоимостью корзины
-        assert product_price in message_basket_total, "No product price in the message"
+        self.should_be_success()
+        self.check_success_message()
+
+    def should_be_name(self):
+        assert self.is_element_present(*ProductPageLocators.PRODUCT_NAME), "Name of product not found"
+        self.product_name = self.browser.find_element(*ProductPageLocators.PRODUCT_NAME).text
+
+    def should_be_price(self):
+        assert self.is_element_present(*ProductPageLocators.PRODUCT_PRICE), "Price of product not found"
+        self.product_price = self.browser.find_element(*ProductPageLocators.PRODUCT_PRICE).text
+
+    def should_be_decription(self):
+        assert self.is_element_present(*ProductPageLocators.PRODUCT_DESCRIPTION), "Description of product not found"
+        self.product_decription = self.browser.find_element(*ProductPageLocators.PRODUCT_DESCRIPTION).text
+
+    def should_be_success(self):
+        assert self.is_element_present(*ProductPageLocators.SUCCESS_MESSAGES), "Message of Success added product in " \
+                                                                               "basket not found "
+
+    def should_be_add_button(self):
+        assert self.is_element_present(*ProductPageLocators.BTN_ADD_TO_BASKET), "Button 'Add to basket' is not " \
+                                                                                "presented "
+
+    def check_success_message(self):
+        msg_lst = self.browser.find_elements(*ProductPageLocators.SUCCESS_MESSAGES)
+        assert len(msg_lst) == 3, "Success message not found"
+
+        assert self.product_name == msg_lst[0].text, "Wrong name product added to basket"
+        assert self.product_price == msg_lst[2].text, "Wrong price product added to basket"
+
+    def should_not_be_success_message(self):
+        assert self.is_not_element_present(*ProductPageLocators.SUCCESS_MESSAGES), \
+            "Success message is presented, but should not be"
+
+    def success_message_should_disappear(self):
+        assert self.is_disappeared(*ProductPageLocators.SUCCESS_MESSAGES), \
+            "Success message is not disappeared, but should"
+
