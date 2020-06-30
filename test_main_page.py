@@ -1,6 +1,6 @@
 from .pages.main_page import MainPage
 from .pages.login_page import LoginPage
-from selenium import webdriver
+from .pages.basket_page import BasketPage
 
 main_page_link = "http://selenium1py.pythonanywhere.com"
 login_page_link = "http://selenium1py.pythonanywhere.com/en-gb/accounts/login/"
@@ -46,6 +46,15 @@ def test_should_be_register_form(browser):
     page = LoginPage(browser, login_page_link)
     page.open()
     page.should_be_register_form()
+
+
+def test_guest_cant_see_product_in_basket_opened_from_main_page(browser):
+    page = BasketPage(browser, main_page_link)
+    page.open()
+    page.go_to_basket()
+    page.is_checkout_btn_presented()
+    page.is_basket_empty_mesage_presented()
+
 
 
 
