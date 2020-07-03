@@ -2,10 +2,6 @@ from .base_page import BasePage
 from .locators import ProductPageLocators
 
 
-from .base_page import BasePage
-from .locators import ProductPageLocators
-
-
 class ProductPage(BasePage):
     product_name = ''
     product_price = ''
